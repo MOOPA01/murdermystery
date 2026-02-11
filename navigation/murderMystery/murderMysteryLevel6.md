@@ -1,7 +1,7 @@
 ---
 layout: opencs
-title: Mansion Level 6
-permalink: /gamify/mansion6
+title: Murder Mystery Boss Fight
+permalink: /murdermystery6
 microblog: true
 ---
 
@@ -11,24 +11,23 @@ microblog: true
 </div>
 
 <script type="module">
-    // Mansion Game assets locations (use central core + GameControl)
+    // Mansion Game assets locations
     import Core from "{{site.baseurl}}/assets/js/mansionGame/MansionLogic/Game.js";
     import GameControl from "{{site.baseurl}}/assets/js/mansionGame/GameControl.js";
-    import MansionLevel6 from "{{site.baseurl}}/assets/js/mansionGame/mansionLevel6.js";
+    import MurderMysteryBossFight from "{{site.baseurl}}/assets/js/mansionGame/murderMysteryBossFight.js";
     import { pythonURI, javaURI, fetchOptions } from '{{site.baseurl}}/assets/js/api/config.js';
 
     // Web Server Environment data
-
     const environment = {
-        path:"{{site.baseurl}}",
+        path: "{{site.baseurl}}",
         pythonURI: pythonURI,
         javaURI: javaURI,
         fetchOptions: fetchOptions,
         gameContainer: document.getElementById("gameContainer"),
         gameCanvas: document.getElementById("gameCanvas"),
-        gameLevelClasses: [MansionLevel6]
-
+        gameLevelClasses: [MurderMysteryBossFight]
     }
-    // Launch Mansion Game using the central core and mansion GameControl
+    
+    // Launch Boss Fight using the central core and mansion GameControl
     Core.main(environment, GameControl);
 </script>

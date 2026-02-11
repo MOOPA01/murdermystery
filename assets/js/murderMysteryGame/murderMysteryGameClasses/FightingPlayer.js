@@ -8,12 +8,13 @@ class FightingPlayer extends Player {
         this.projectiles = [];
         this.lastAttackTime = Date.now();
         this.attackCooldown = 500; // 500ms between shots
-        this.currentDirection = 'right'; // track facing direction
+        this.currentDirection = 'right'; // track facing direction (right, left, up, down)
 
         // Bind attack to spacebar
         if (typeof window !== 'undefined') {
             this._attackHandler = (event) => {
                 if (event.code === 'Space' || event.key === ' ') {
+                    event.preventDefault();
                     this.attack();
                 }
             };
@@ -25,9 +26,17 @@ class FightingPlayer extends Player {
     update(...args) {
         super.update(...args);  // Do normal player updating
         
-        // Track facing direction based on movement
-        if (this.velocity.x > 0) this.currentDirection = 'right';
-        else if (this.velocity.x < 0) this.currentDirection = 'left';
+        // Track facing direction based on movement (priority: most recent input)
+        if (this.velocity.y < 0) {
+            this.currentDirection = 'up';
+        } else if (this.velocity.y > 0) {
+            this.currentDirection = 'down';
+        } else if (this.velocity.x > 0) {
+            this.currentDirection = 'right';
+        } else if (this.velocity.x < 0) {
+            this.currentDirection = 'left';
+        }
+        // If not moving, keep previous direction
         
         // Update and clean up projectiles
         this.projectiles = this.projectiles.filter(p => !p.revComplete);
@@ -63,10 +72,28 @@ class FightingPlayer extends Player {
             // Visual melee effect
             this.showMeleeEffect();
         } else {
-            // RANGED ATTACK - shoot arrow projectile
-            const facingRight = this.currentDirection === 'right';
-            const targetX = this.position.x + (facingRight ? 500 : -500);
-            const targetY = this.position.y;
+            // RANGED ATTACK - shoot arrow in facing direction
+            let targetX = this.position.x + this.width/2;
+            let targetY = this.position.y + this.height/2;
+            
+            const ARROW_DISTANCE = 500;
+            
+            // Calculate target based on facing direction
+            switch(this.currentDirection) {
+                case 'up':
+                    targetY -= ARROW_DISTANCE;
+                    break;
+                case 'down':
+                    targetY += ARROW_DISTANCE;
+                    break;
+                case 'left':
+                    targetX -= ARROW_DISTANCE;
+                    break;
+                case 'right':
+                default:
+                    targetX += ARROW_DISTANCE;
+                    break;
+            }
             
             // Create arrow projectile
             this.projectiles.push(
@@ -81,7 +108,7 @@ class FightingPlayer extends Player {
                 )
             );
             
-            console.log(`🏹 RANGED ATTACK! Arrow fired.`);
+            console.log(`🏹 RANGED ATTACK! Arrow fired ${this.currentDirection}.`);
         }
         
         this.lastAttackTime = now;
